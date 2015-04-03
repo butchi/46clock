@@ -84,35 +84,64 @@ div, p {
   </div>
 
   <script src="js/lib/jquery.js"></script>
+  <script src="js/lib/underscore.js"></script>
+  <script src="js/jukugo-list.js"></script>
   <script>
-var sec = 0;
+'use strict';
+var sec = 18;
 //var min = 0;
 //var hour = 0;
-var toggleArr = [
-  [0],
-  [0],
-  [1],
-  [1],
-  [2],
-  [2],
-  [3],
-  [3],
-  [0, 1, 2, 3],
-  [0, 1, 2, 3],
+
+var $clock = $('.clock');
+var $digitSec1 = $clock.find('.digit').eq(3);
+var $digitSec10 = $clock.find('.digit').eq(2);
+
+var emphasisMap = [
+  [0, 0, 0, 0],
+  [1, 0, 0, 0],
+  [0, 0, 0, 0],
+  [0, 1, 0, 0],
+  [0, 0, 0, 0],
+  [0, 0, 1, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 1],
+  [0, 0, 0, 0],
+  [1, 1, 1, 1],
 ];
 
-setInterval(function() {
-  var $clock = $('.clock');
+function getDom(word) {
+  var $tmpl = $('<span class="character"></span>');
+  var $ret = $('<div class="digit"></div>');
+  var $char0 = $tmpl.clone();
+  var $char1 = $tmpl.clone();
+  var $char2 = $tmpl.clone();
+  var $char3 = $tmpl.clone();
+  
+  var re = /[零一二三四五六七八九]/;
+  
+  $char0.text(word[0]);
+  $char1.text(word[1]);
+  $char2.text(word[2]);
+  $char3.text(word[3]);
+  
+  (word[0].match(re)) ? $char0.addClass('number') : void(0);
+  (word[1].match(re)) ? $char1.addClass('number') : void(0);
+  (word[2].match(re)) ? $char2.addClass('number') : void(0);
+  (word[3].match(re)) ? $char3.addClass('number') : void(0);
+  
+  $char0.appendTo($ret);
+  $char1.appendTo($ret);
+  $char2.appendTo($ret);
+  $char3.appendTo($ret);
 
-  $clock.find('.digit').eq(2).each(function(i, elm) {
-    var toggleIdxArr = toggleArr[sec % toggleArr.length];
-    var $character = $(elm).find('.character');
-    $character.attr('style', '');
-    
-    toggleIdxArr.forEach(function(idx) {
-      $character.eq(idx).toggleClass('emphasis');
-    });
-  });
+  return $ret;
+}
+
+function updateClock() {
+  var wordSec1,
+      wordSec10,
+      sec1,
+      sec10;
 
   sec++;
 //  if(sec === 0) {
@@ -121,7 +150,34 @@ setInterval(function() {
 //  if(min === 0) {
 //    hour++;
 //  }
-}, 1000);
+
+  sec1 = (sec % 60).toString(10)[1];
+  sec10 = (sec % 60).toString(10)[0];
+  console.log(sec10, sec1);
+
+  wordSec1 = _.sample(jukugoLi[sec1])
+  $digitSec1.html('').append(getDom(wordSec1));
+
+  if(sec1 === '0') {
+    wordSec10 = _.sample(jukugoLi[sec10]);
+    $digitSec10.html('').append(getDom(wordSec10));
+  }
+  $digitSec10.each(function(i, elm) {
+    var emphasisArr = emphasisMap[sec % 10];
+    var $character = $(elm).find('.character');
+    
+    emphasisArr.forEach(function(isOn, i) {
+      if(isOn) {
+        $character.eq(i).addClass('emphasis')
+      } else {
+        $character.eq(i).removeClass('emphasis')
+      }
+    });
+  });
+}
+
+setInterval(updateClock, 1000);
+
   </script>
 </body>
 </html>
