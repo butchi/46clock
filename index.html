@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>四六時計</title>
+  <style>
+div, p {
+  margin: 0;
+  padding: 0;
+}
+
+.clock .digit {
+  float: left;
+}
+
+.clock .colon {
+  display: block;
+  
+  width: 64px;
+  height: 64px;
+  
+  float: left;
+  font-size: 64px;
+  font-family: sans-serif;
+
+  line-height: 64px;
+}
+
+.clock .digit .character {
+  display: block;
+  float: left;
+
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  line-height: 32px;
+  
+  background-color: #fcc;
+}
+
+.clock .digit .character.number {
+  background-color: #f99;
+}
+
+.clock .digit .character:nth-child(3) {
+  clear: both;
+}
+
+.clock .digit .character.emphasis {
+  background-color: #f00;
+}
+
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="clock">
+      <div class="digit">
+        <span class="character number">一</span>
+        <span class="character">触</span>
+        <span class="character">即</span>
+        <span class="character">発</span>
+      </div>
+      <div class="digit">
+        <span class="character">正</span>
+        <span class="character number">六</span>
+        <span class="character">面</span>
+        <span class="character">体</span>
+      </div>
+      <p class="colon">：</p>
+      <div class="digit">
+        <span class="character">那</span>
+        <span class="character">須</span>
+        <span class="character">与</span>
+        <span class="character number">一</span>
+      </div>
+      <div class="digit">
+        <span class="character">傍</span>
+        <span class="character">目</span>
+        <span class="character number">八</span>
+        <span class="character">目</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/lib/jquery.js"></script>
+  <script>
+var sec = 0;
+//var min = 0;
+//var hour = 0;
+var toggleArr = [
+  [0],
+  [0],
+  [1],
+  [1],
+  [2],
+  [2],
+  [3],
+  [3],
+  [0, 1, 2, 3],
+  [0, 1, 2, 3],
+];
+
+setInterval(function() {
+  var $clock = $('.clock');
+
+  $clock.find('.digit').eq(2).each(function(i, elm) {
+    var toggleIdxArr = toggleArr[sec % toggleArr.length];
+    var $character = $(elm).find('.character');
+    $character.attr('style', '');
+    
+    toggleIdxArr.forEach(function(idx) {
+      $character.eq(idx).toggleClass('emphasis');
+    });
+  });
+
+  sec++;
+//  if(sec === 0) {
+//    min++;
+//  }
+//  if(min === 0) {
+//    hour++;
+//  }
+}, 1000);
+  </script>
+</body>
+</html>
